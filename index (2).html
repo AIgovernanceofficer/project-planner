@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projectplanning · Universiteit Utrecht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* UU huisstijl */
+    --yellow:#FFD200;
+    --yellow-light:#FFE6AB;
+    --navy:#001240;
+    --navy-soft:#3c4a6b;
+    --navy-faint:#8a93ab;
+    --teal:#24A793;
+    --salmon:#F3965E;
+    --blue:#5287C6;
+    --purple:#5B2182;
+    --pink:#AA1555;
+    --brown:#6E3B23;
+
+    --page:#eef1f6;
+    --surface:#ffffff;
+    --lane:#f6f8fb;
+    --line:#e1e5ee;
+    --line-strong:#cdd4e1;
+
+    --shadow:0 1px 2px rgba(0,18,64,.06),0 6px 16px rgba(0,18,64,.08);
+    --shadow-lift:0 10px 30px rgba(0,18,64,.18);
+    --ring:0 0 0 3px rgba(255,210,0,.6);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Open Sans",Arial,sans-serif;
+    background:var(--page);color:var(--navy);
+    background-image:radial-gradient(circle at 1px 1px, rgba(0,18,64,.05) 1px, transparent 0);
+    background-size:22px 22px;
+    -webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;height:100vh;overflow:hidden;
+  }
+  /* ---------- Header: UU geel blok ---------- */
+  header{
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    padding:16px 24px;background:var(--yellow);position:relative;z-index:20;
+    border-bottom:3px solid var(--navy);
+  }
+  .brand{display:flex;align-items:center;gap:13px;margin-right:auto}
+  .logo-slot{
+    width:42px;height:42px;border:2px dashed rgba(0,18,64,.4);border-radius:8px;
+    display:grid;place-items:center;font-size:8.5px;font-weight:700;color:rgba(0,18,64,.55);
+    text-align:center;line-height:1.05;letter-spacing:.02em;flex:0 0 auto;
+  }
+  .brand-txt h1{
+    font-family:"Merriweather",Georgia,serif;font-weight:900;font-size:22px;letter-spacing:-.01em;color:var(--navy);line-height:1.05;
+  }
+  .brand-txt small{display:block;color:var(--navy-soft);font-size:12px;font-weight:600;letter-spacing:.04em;margin-top:1px}
+  #autosave{color:var(--navy-soft)}
+
+  .toggle{display:inline-flex;background:#fff;border:1.5px solid var(--navy);border-radius:999px;padding:3px}
+  .toggle button{
+    border:none;background:transparent;font:inherit;font-family:"Open Sans",Arial,sans-serif;font-weight:700;font-size:13.5px;
+    color:var(--navy);padding:7px 17px;border-radius:999px;cursor:pointer;transition:.16s;
+  }
+  .toggle button.active{background:var(--navy);color:#fff}
+
+  .search{position:relative}
+  .search input{
+    font:inherit;font-family:"Open Sans",Arial,sans-serif;font-size:13.5px;padding:8px 12px 8px 32px;width:185px;
+    border:1.5px solid var(--navy);border-radius:9px;background:#fff;color:var(--navy);
+  }
+  .search input::placeholder{color:var(--navy-faint)}
+  .search input:focus{outline:none;box-shadow:var(--ring)}
+  .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--navy-soft)}
+
+  .btn{
+    font:inherit;font-family:"Open Sans",Arial,sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;
+    border:1.5px solid var(--navy);background:#fff;color:var(--navy);
+    padding:8px 14px;border-radius:9px;transition:.16s;display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  .btn.primary{background:var(--navy);color:#fff}
+  .btn.primary:hover{background:#01205f}
+  .btn svg{width:15px;height:15px}
+  .menu-wrap{position:relative}
+  .menu{
+    position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1.5px solid var(--line-strong);
+    border-radius:11px;box-shadow:var(--shadow-lift);padding:6px;min-width:190px;display:none;z-index:50;
+  }
+  .menu.open{display:block}
+  .menu button{
+    display:flex;width:100%;align-items:center;gap:9px;border:none;background:transparent;font:inherit;
+    font-family:"Open Sans",Arial,sans-serif;font-size:13.5px;font-weight:600;
+    color:var(--navy);padding:9px 11px;border-radius:7px;cursor:pointer;text-align:left;
+  }
+  .menu button:hover{background:var(--page)}
+  .menu hr{border:none;border-top:1px solid var(--line);margin:5px 4px}
+
+  /* ---------- Board ---------- */
+  main{flex:1;overflow:hidden;position:relative}
+  .board{height:100%;display:flex;gap:16px;padding:20px 24px;overflow-x:auto;overflow-y:hidden;align-items:flex-start}
+  .lane{
+    flex:0 0 290px;max-height:100%;display:flex;flex-direction:column;
+    background:var(--lane);border:1px solid var(--line);border-radius:14px;
+  }
+  .lane.drag-over{border-color:var(--yellow);box-shadow:var(--ring)}
+  .lane-head{display:flex;align-items:center;gap:8px;padding:14px 14px 10px}
+  .lane-pip{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .lane-title{
+    font-family:"Merriweather",Georgia,serif;font-weight:700;font-size:15px;border:none;background:transparent;color:var(--navy);
+    flex:1;min-width:0;padding:3px 4px;border-radius:6px;
+  }
+  .lane-title:focus{outline:none;background:#fff;box-shadow:var(--ring)}
+  .lane-count{font-size:12px;font-weight:700;color:var(--navy-soft);background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
+  .lane-x{border:none;background:transparent;color:var(--navy-faint);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:6px}
+  .lane-x:hover{background:#fff;color:var(--pink)}
+  .cards{flex:1;overflow-y:auto;padding:4px 12px 12px;display:flex;flex-direction:column;gap:10px;min-height:24px}
+  .cards::-webkit-scrollbar{width:8px}
+  .cards::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:99px}
+  .lane-add{margin:0 12px 14px;border:1.5px dashed var(--line-strong);background:transparent;border-radius:9px;
+    color:var(--navy-soft);font:inherit;font-family:"Open Sans",Arial,sans-serif;font-weight:700;font-size:13px;padding:9px;cursor:pointer}
+  .lane-add:hover{border-color:var(--navy);color:var(--navy);background:#fff}
+
+  .card{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:11px;
+    box-shadow:var(--shadow);cursor:grab;position:relative;overflow:hidden;transition:transform .12s, box-shadow .12s;
+    border-left:5px solid var(--navy);
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift)}
+  .card.dragging{opacity:.45;cursor:grabbing}
+  .card-body{padding:11px 13px 12px}
+  .card .ttl{font-weight:700;font-size:14.5px;line-height:1.3;margin-bottom:4px;color:var(--navy)}
+  .card .desc{font-size:12.5px;color:var(--navy-soft);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .pri{font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:2px 9px;border-radius:999px;text-transform:uppercase}
+  .pri.laag{background:#dcf1ed;color:#157567}
+  .pri.middel{background:var(--yellow-light);color:#7a5a00}
+  .pri.hoog{background:#f7dde6;color:var(--pink)}
+  .chip{font-size:11.5px;font-weight:600;color:var(--navy-soft);background:var(--page);border:1px solid var(--line);border-radius:7px;padding:2px 8px;display:inline-flex;align-items:center;gap:4px}
+  .chip svg{width:12px;height:12px;stroke:var(--navy-faint)}
+  .avatar{width:23px;height:23px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;margin-left:auto}
+
+  /* ---------- Tijdlijn ---------- */
+  .timeline{height:100%;overflow:auto;padding:18px 24px 28px}
+  .tl-empty{color:var(--navy-faint);font-size:14px;padding:24px}
+  .tl-grid{position:relative;min-width:760px}
+  .tl-axis{display:flex;position:sticky;top:0;background:linear-gradient(var(--page),var(--page) 70%, transparent);z-index:5;padding-bottom:6px}
+  .tl-label-col{flex:0 0 220px}
+  .tl-months{flex:1;display:flex;border-bottom:2px solid var(--navy);position:relative}
+  .tl-month{font-size:12px;font-weight:700;color:var(--navy);padding:0 0 6px 6px;border-left:1px solid var(--line-strong);text-transform:capitalize}
+  .tl-row{display:flex;align-items:center;min-height:46px;border-bottom:1px solid var(--line)}
+  .tl-label{flex:0 0 220px;padding-right:14px;display:flex;align-items:center;gap:8px;overflow:hidden}
+  .tl-label .pip{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+  .tl-label .tx{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--navy)}
+  .tl-track{flex:1;position:relative;height:46px}
+  .tl-gridlines{position:absolute;inset:0;display:flex}
+  .tl-gridlines span{border-left:1px solid var(--line);flex:1}
+  .tl-today{position:absolute;top:0;bottom:0;width:2px;background:var(--pink);z-index:3}
+  .tl-today::after{content:"vandaag";position:absolute;top:-1px;left:5px;font-size:10px;font-weight:700;color:var(--pink)}
+  .tl-bar{position:absolute;top:50%;transform:translateY(-50%);height:25px;border-radius:7px;display:flex;align-items:center;
+    padding:0 10px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;cursor:pointer;
+    box-shadow:0 1px 4px rgba(0,18,64,.22);min-width:8px}
+  .tl-bar:hover{filter:brightness(1.05);box-shadow:var(--shadow-lift)}
+  .tl-bar.milestone{padding:0;width:18px!important;height:18px;border-radius:5px;transform:translateY(-50%) rotate(45deg);left:calc(var(--x))}
+
+  /* ---------- Modal ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(0,18,64,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .scrim.open{display:flex}
+  .modal{background:var(--surface);border-radius:18px;box-shadow:var(--shadow-lift);width:100%;max-width:520px;max-height:92vh;overflow:auto;border:1px solid var(--line-strong)}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 6px;border-top:6px solid var(--yellow);border-radius:18px 18px 0 0}
+  .modal-head h2{font-family:"Merriweather",Georgia,serif;font-weight:900;font-size:20px;color:var(--navy)}
+  .modal-x{border:none;background:transparent;font-size:24px;cursor:pointer;color:var(--navy-faint);line-height:1}
+  .modal-x:hover{color:var(--pink)}
+  .modal-body{padding:8px 22px 4px}
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--navy-soft);margin-bottom:5px;letter-spacing:.02em;text-transform:uppercase}
+  .field input,.field textarea,.field select{
+    width:100%;font:inherit;font-family:"Open Sans",Arial,sans-serif;font-size:14px;padding:9px 11px;border:1.5px solid var(--line-strong);border-radius:9px;background:#fff;color:var(--navy);
+  }
+  .field textarea{resize:vertical;min-height:62px}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:var(--ring)}
+  .row2{display:flex;gap:13px}.row2 .field{flex:1}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap}
+  .swatch{width:30px;height:30px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.12s}
+  .swatch:hover{transform:scale(1.08)}
+  .swatch.sel{border-color:var(--navy);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--navy)}
+  .modal-foot{display:flex;gap:10px;align-items:center;padding:8px 22px 22px}
+  .modal-foot .del{margin-right:auto;color:var(--pink);border-color:transparent;background:transparent;padding-left:0}
+  .modal-foot .del:hover{text-decoration:underline;transform:none;box-shadow:none}
+
+  .empty-hint{color:var(--navy-faint);font-size:12.5px;text-align:center;padding:6px 0}
+  @media (max-width:640px){
+    .brand-txt small{display:none}
+    .search input{width:120px}
+    .lane{flex-basis:82vw}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo-slot" title="Plaats hier het officiële UU-logo (logo.png)">UU&nbsp;LOGO</div>
+    <div class="brand-txt">
+      <h1>Projectplanning</h1>
+      <small id="autosave">Universiteit Utrecht · automatisch opgeslagen</small>
+    </div>
+  </div>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" type="text" placeholder="Zoeken…">
+  </div>
+
+  <div class="toggle">
+    <button id="viewBord" class="active" onclick="setView('bord')">Bord</button>
+    <button id="viewTl" onclick="setView('tijdlijn')">Tijdlijn</button>
+  </div>
+
+  <button class="btn primary" onclick="openCard(null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Kaart
+  </button>
+
+  <div class="menu-wrap">
+    <button class="btn" onclick="toggleMenu(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+    </button>
+    <div class="menu" id="menu">
+      <button onclick="addLane();closeMenu()">➕ Nieuwe lane</button>
+      <hr>
+      <button onclick="generatePptx();closeMenu()">📊 Managementexport (PowerPoint)</button>
+      <hr>
+      <button onclick="exportData();closeMenu()">💾 Back-up opslaan</button>
+      <button onclick="document.getElementById('importFile').click();closeMenu()">↩️ Back-up terugzetten</button>
+      <hr>
+      <button onclick="resetData();closeMenu()">🗑️ Alles wissen</button>
+    </div>
+  </div>
+  <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
+</header>
+
+<main>
+  <div class="board" id="board"></div>
+  <div class="timeline" id="timeline" style="display:none"></div>
+</main>
+
+<!-- Modal -->
+<div class="scrim" id="scrim" onclick="if(event.target===this)closeCard()">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Nieuwe kaart</h2>
+      <button class="modal-x" onclick="closeCard()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Titel</label>
+        <input id="f-title" type="text" placeholder="Waar gaat deze taak over?">
+      </div>
+      <div class="field">
+        <label>Beschrijving</label>
+        <textarea id="f-desc" placeholder="Korte toelichting, scope, afspraken…"></textarea>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Verantwoordelijke</label>
+          <input id="f-owner" type="text" placeholder="Naam">
+        </div>
+        <div class="field">
+          <label>Lane / status</label>
+          <select id="f-lane"></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Startdatum</label>
+          <input id="f-start" type="date">
+        </div>
+        <div class="field">
+          <label>Einddatum / deadline</label>
+          <input id="f-end" type="date">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Prioriteit</label>
+          <select id="f-pri"><option value="laag">Laag</option><option value="middel" selected>Middel</option><option value="hoog">Hoog</option></select>
+        </div>
+        <div class="field">
+          <label>Categorie / tag</label>
+          <input id="f-tag" type="text" placeholder="bv. Onderwijs, IT…">
+        </div>
+      </div>
+      <div class="field">
+        <label>Kleur (UU-palet)</label>
+        <div class="swatches" id="swatches"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn del" id="delBtn" onclick="deleteCard()">Verwijderen</button>
+      <button class="btn" onclick="closeCard()">Annuleren</button>
+      <button class="btn primary" onclick="saveCard()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<script>
+"use strict";
+
+/* UU-palet — accentkleuren voor design-elementen (kaarten, balken), niet voor lopende tekst */
+const COLORS = [
+  {k:"navy",v:"#001240"},{k:"geel",v:"#FFD200"},{k:"teal",v:"#24A793"},{k:"blauw",v:"#5287C6"},
+  {k:"paars",v:"#5B2182"},{k:"salmon",v:"#F3965E"},{k:"roze",v:"#AA1555"},{k:"bruin",v:"#6E3B23"}
+];
+const colorVal = k => (COLORS.find(c=>c.k===k)||COLORS[0]).v;
+/* leesbare tekstkleur op een gekleurde achtergrond */
+function contrast(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return (0.299*r+0.587*g+0.114*b)>150 ? "#001240" : "#ffffff";
+}
+
+/* ---------- Opslag (werkt op GitHub Pages / lokaal; valt terug op geheugen in preview) ---------- */
+const KEY = "projectplanning.uu.v1";
+let memStore = null;
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw) return JSON.parse(raw); }
+  catch(e){ if(memStore) return memStore; }
+  return null;
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ memStore = state; }
+  flashSaved();
+}
+let saveTimer=null;
+function flashSaved(){
+  const el=document.getElementById('autosave');
+  el.textContent="opgeslagen ✓"; el.style.color="#157567";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{el.textContent="Universiteit Utrecht · automatisch opgeslagen";el.style.color="";},1300);
+}
+
+/* ---------- Startgegevens ---------- */
+function seed(){
+  const d=(off)=>{const x=new Date();x.setDate(x.getDate()+off);return x.toISOString().slice(0,10);};
+  return {
+    lanes:[
+      {id:"l1",name:"Backlog"},{id:"l2",name:"Te doen"},{id:"l3",name:"Bezig"},
+      {id:"l4",name:"Review"},{id:"l5",name:"Klaar"}
+    ],
+    cards:[
+      {id:"c1",lane:"l3",title:"Projectkader & scope vaststellen",desc:"Doelen, stakeholders en randvoorwaarden vastleggen.",owner:"Yvette",start:d(-7),end:d(3),pri:"hoog",tag:"Governance",color:"roze"},
+      {id:"c2",lane:"l2",title:"Stakeholders in kaart brengen",desc:"Vice-decanen en ondersteuners betrekken.",owner:"Team",start:d(2),end:d(9),pri:"middel",tag:"Onderwijs",color:"teal"},
+      {id:"c3",lane:"l1",title:"Risico- & privacyanalyse",desc:"AVG-toets en ethische risico's.",owner:"",start:d(10),end:d(20),pri:"hoog",tag:"Compliance",color:"paars"},
+      {id:"c4",lane:"l5",title:"Kick-off bijeenkomst",desc:"Aftrap met de faculteit.",owner:"Yvette",start:d(-3),end:d(-3),pri:"middel",tag:"Planning",color:"geel"},
+      {id:"c5",lane:"l4",title:"Conceptplanning opleveren",desc:"Eerste versie ter review.",owner:"Team",start:d(-2),end:d(5),pri:"laag",tag:"Planning",color:"blauw"}
+    ]
+  };
+}
+
+let state = load() || seed();
+let view = "bord";
+let editingId = null;
+let pickedColor = "navy";
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid = () => "id"+Math.random().toString(36).slice(2,9);
+function fmtDate(s){ if(!s) return ""; const [y,m,d]=s.split("-"); return `${d}-${m}`; }
+function initials(n){ if(!n) return ""; return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function avatarColor(n){ let h=0; for(const ch of (n||"?")) h=(h*31+ch.charCodeAt(0))%COLORS.length; return COLORS[h].v; }
+
+/* ---------- View wisselen ---------- */
+function setView(v){
+  view=v;
+  $("viewBord").classList.toggle("active",v==="bord");
+  $("viewTl").classList.toggle("active",v==="tijdlijn");
+  $("board").style.display = v==="bord"?"flex":"none";
+  $("timeline").style.display = v==="tijdlijn"?"block":"none";
+  render();
+}
+
+/* ---------- Render Bord ---------- */
+function matchesSearch(c){
+  const q=$("search").value.trim().toLowerCase();
+  if(!q) return true;
+  return (c.title+" "+c.desc+" "+c.owner+" "+c.tag).toLowerCase().includes(q);
+}
+const LANE_PIPS=["#001240","#24A793","#5287C6","#5B2182","#F3965E","#AA1555","#6E3B23"];
+
+function render(){ if(view==="bord") renderBoard(); else renderTimeline(); }
+
+function renderBoard(){
+  const board=$("board"); board.innerHTML="";
+  state.lanes.forEach((lane,li)=>{
+    const cards=state.cards.filter(c=>c.lane===lane.id && matchesSearch(c));
+    const el=document.createElement("div");
+    el.className="lane"; el.dataset.lane=lane.id;
+    el.innerHTML=`
+      <div class="lane-head">
+        <span class="lane-pip" style="background:${LANE_PIPS[li%LANE_PIPS.length]}"></span>
+        <input class="lane-title" value="${esc(lane.name)}" onchange="renameLane('${lane.id}',this.value)">
+        <span class="lane-count">${cards.length}</span>
+        <button class="lane-x" title="Lane verwijderen" onclick="deleteLane('${lane.id}')">×</button>
+      </div>
+      <div class="cards" data-lane="${lane.id}"></div>
+      <button class="lane-add" onclick="openCard(null,'${lane.id}')">+ Kaart toevoegen</button>`;
+    const cardsBox=el.querySelector(".cards");
+    if(cards.length===0) cardsBox.innerHTML='<div class="empty-hint">Sleep hier een kaart</div>';
+    cards.forEach(c=>cardsBox.appendChild(cardEl(c)));
+    cardsBox.addEventListener("dragover",e=>{e.preventDefault();el.classList.add("drag-over");});
+    cardsBox.addEventListener("dragleave",e=>{if(!el.contains(e.relatedTarget))el.classList.remove("drag-over");});
+    cardsBox.addEventListener("drop",e=>{e.preventDefault();el.classList.remove("drag-over");onDrop(e,lane.id,cardsBox);});
+    board.appendChild(el);
+  });
+}
+
+function cardEl(c){
+  const el=document.createElement("div");
+  el.className="card"; el.draggable=true; el.dataset.id=c.id;
+  el.style.borderLeftColor=colorVal(c.color);
+  const dates = (c.start||c.end) ? `<span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>${esc(fmtDate(c.start))}${c.end&&c.end!==c.start?" → "+esc(fmtDate(c.end)):""}</span>` : "";
+  const tag = c.tag ? `<span class="chip">${esc(c.tag)}</span>` : "";
+  const av = c.owner ? `<span class="avatar" title="${esc(c.owner)}" style="background:${avatarColor(c.owner)};color:${contrast(avatarColor(c.owner))}">${esc(initials(c.owner))}</span>` : "";
+  el.innerHTML=`
+    <div class="card-body">
+      <div class="ttl">${esc(c.title)||"(zonder titel)"}</div>
+      ${c.desc?`<div class="desc">${esc(c.desc)}</div>`:""}
+      <div class="card-meta"><span class="pri ${c.pri}">${c.pri}</span>${tag}${dates}${av}</div>
+    </div>`;
+  el.addEventListener("click",()=>openCard(c.id));
+  el.addEventListener("dragstart",e=>{e.stopPropagation();draggedId=c.id;el.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
+  el.addEventListener("dragend",()=>{el.classList.remove("dragging");draggedId=null;});
+  return el;
+}
+
+let draggedId=null;
+function onDrop(e,laneId,box){
+  if(!draggedId) return;
+  const card=state.cards.find(c=>c.id===draggedId); if(!card) return;
+  const siblings=[...box.querySelectorAll(".card")].filter(el=>el.dataset.id!==draggedId);
+  let insertBefore=null;
+  for(const el of siblings){
+    const r=el.getBoundingClientRect();
+    if(e.clientY < r.top + r.height/2){ insertBefore=el.dataset.id; break; }
+  }
+  state.cards=state.cards.filter(c=>c.id!==draggedId);
+  card.lane=laneId;
+  if(insertBefore){
+    const idx=state.cards.findIndex(c=>c.id===insertBefore);
+    state.cards.splice(idx,0,card);
+  } else {
+    const last=state.cards.map((c,i)=>c.lane===laneId?i:-1).filter(i=>i>=0).pop();
+    state.cards.splice(last==null?state.cards.length:last+1,0,card);
+  }
+  save(); render();
+}
+
+/* ---------- Render Tijdlijn (Gantt) ---------- */
+function renderTimeline(){
+  const tl=$("timeline");
+  const cards=state.cards.filter(c=>(c.start||c.end)&&matchesSearch(c))
+    .map(c=>({...c, s:c.start||c.end, e:c.end||c.start}))
+    .sort((a,b)=>a.s.localeCompare(b.s));
+  if(cards.length===0){ tl.innerHTML='<div class="tl-empty">Nog geen kaarten met datums. Voeg een start- of einddatum toe om ze op de tijdlijn te zien.</div>'; return; }
+
+  let min=cards[0].s, max=cards[0].e;
+  cards.forEach(c=>{ if(c.s<min)min=c.s; if(c.e>max)max=c.e; });
+  let minD=new Date(min), maxD=new Date(max);
+  minD=new Date(minD.getFullYear(),minD.getMonth(),1);
+  maxD=new Date(maxD.getFullYear(),maxD.getMonth()+1,0);
+  const span=(maxD-minD)||1;
+  const pct=d=>((new Date(d)-minD)/span)*100;
+
+  const months=[]; let cur=new Date(minD);
+  while(cur<=maxD){ months.push(new Date(cur)); cur.setMonth(cur.getMonth()+1); }
+  const monthNames=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+  const monthsHTML=months.map(m=>{
+    const start=new Date(m.getFullYear(),m.getMonth(),1);
+    const end=new Date(m.getFullYear(),m.getMonth()+1,0);
+    const w=((Math.min(end,maxD)-Math.max(start,minD))/span)*100;
+    return `<div class="tl-month" style="flex:0 0 ${w}%">${monthNames[m.getMonth()]} ${String(m.getFullYear()).slice(2)}</div>`;
+  }).join("");
+  const gridlines=months.map(()=>`<span></span>`).join("");
+
+  const today=new Date().toISOString().slice(0,10);
+  const todayPct=(new Date(today)>=minD&&new Date(today)<=maxD)?pct(today):null;
+
+  const rows=cards.map(c=>{
+    const left=pct(c.s), right=pct(c.e);
+    const isMile = c.s===c.e;
+    const width=Math.max(right-left,0.6);
+    const col=colorVal(c.color), txt=contrast(col);
+    const bar = isMile
+      ? `<div class="tl-bar milestone" style="--x:calc(${left}% - 9px);background:${col}" onclick="openCard('${c.id}')" title="${esc(c.title)} · ${esc(fmtDate(c.s))}"></div>`
+      : `<div class="tl-bar" style="left:${left}%;width:${width}%;background:${col};color:${txt}" onclick="openCard('${c.id}')" title="${esc(c.title)}">${esc(c.title)}</div>`;
+    return `<div class="tl-row">
+      <div class="tl-label">
+        <span class="pip" style="background:${col}"></span>
+        <span class="tx" title="${esc(c.title)}">${esc(c.title)}</span>
+      </div>
+      <div class="tl-track">
+        <div class="tl-gridlines">${gridlines}</div>
+        ${todayPct!=null?`<div class="tl-today" style="left:${todayPct}%"></div>`:""}
+        ${bar}
+      </div>
+    </div>`;
+  }).join("");
+
+  tl.innerHTML=`<div class="tl-grid">
+    <div class="tl-axis"><div class="tl-label-col"></div><div class="tl-months">${monthsHTML}</div></div>
+    ${rows}
+  </div>`;
+}
+
+/* ---------- Lanes ---------- */
+function addLane(){ state.lanes.push({id:uid(),name:"Nieuwe lane"}); save(); render(); }
+function renameLane(id,name){ const l=state.lanes.find(x=>x.id===id); if(l){l.name=name.trim()||"Lane";save();} }
+function deleteLane(id){
+  const cnt=state.cards.filter(c=>c.lane===id).length;
+  if(state.lanes.length<=1){ alert("Er moet minstens één lane blijven."); return; }
+  if(cnt>0 && !confirm(`Deze lane bevat ${cnt} kaart(en). De kaarten worden ook verwijderd. Doorgaan?`)) return;
+  state.lanes=state.lanes.filter(l=>l.id!==id);
+  state.cards=state.cards.filter(c=>c.lane!==id);
+  save(); render();
+}
+
+/* ---------- Kaart modal ---------- */
+function buildSwatches(){
+  const box=$("swatches"); box.innerHTML="";
+  COLORS.forEach(c=>{
+    const s=document.createElement("div");
+    s.className="swatch"+(c.k===pickedColor?" sel":"");
+    s.style.background=c.v; s.title=c.k;
+    s.onclick=()=>{pickedColor=c.k;buildSwatches();};
+    box.appendChild(s);
+  });
+}
+function fillLaneSelect(sel){
+  const el=$("f-lane"); el.innerHTML="";
+  state.lanes.forEach(l=>{
+    const o=document.createElement("option");o.value=l.id;o.textContent=l.name;
+    if(l.id===sel)o.selected=true; el.appendChild(o);
+  });
+}
+function openCard(id, laneHint){
+  editingId=id;
+  const c = id ? state.cards.find(x=>x.id===id) : null;
+  $("modalTitle").textContent = c?"Kaart bewerken":"Nieuwe kaart";
+  $("delBtn").style.display = c?"inline-flex":"none";
+  $("f-title").value=c?c.title:"";
+  $("f-desc").value=c?c.desc:"";
+  $("f-owner").value=c?c.owner:"";
+  $("f-start").value=c?c.start:"";
+  $("f-end").value=c?c.end:"";
+  $("f-pri").value=c?c.pri:"middel";
+  $("f-tag").value=c?c.tag:"";
+  pickedColor=c?c.color:"navy";
+  fillLaneSelect(c?c.lane:(laneHint||state.lanes[0].id));
+  buildSwatches();
+  $("scrim").classList.add("open");
+  setTimeout(()=>$("f-title").focus(),50);
+}
+function closeCard(){ $("scrim").classList.remove("open"); editingId=null; }
+function saveCard(){
+  const data={
+    title:$("f-title").value.trim(), desc:$("f-desc").value.trim(), owner:$("f-owner").value.trim(),
+    lane:$("f-lane").value, start:$("f-start").value, end:$("f-end").value,
+    pri:$("f-pri").value, tag:$("f-tag").value.trim(), color:pickedColor
+  };
+  if(!data.title){ $("f-title").focus(); $("f-title").style.borderColor="var(--pink)"; return; }
+  if(data.start && data.end && data.end<data.start){ const t=data.start;data.start=data.end;data.end=t; }
+  if(editingId){ const c=state.cards.find(x=>x.id===editingId); Object.assign(c,data); }
+  else { state.cards.push({id:uid(),...data}); }
+  save(); closeCard(); render();
+}
+function deleteCard(){
+  if(!editingId) return;
+  if(!confirm("Deze kaart verwijderen?")) return;
+  state.cards=state.cards.filter(c=>c.id!==editingId);
+  save(); closeCard(); render();
+}
+
+/* ---------- Menu / import / export ---------- */
+function toggleMenu(e){e.stopPropagation();$("menu").classList.toggle("open");}
+function closeMenu(){$("menu").classList.remove("open");}
+document.addEventListener("click",()=>closeMenu());
+
+/* ---------- Managementexport naar PowerPoint (hoofdlijnen) ---------- */
+function generatePptx(){
+  if(typeof PptxGenJS==="undefined"){
+    alert("De PowerPoint-module kon niet laden. Controleer je internetverbinding (of netwerkinstellingen) en probeer opnieuw.");
+    return;
+  }
+  const pptx=new PptxGenJS();
+  pptx.layout="LAYOUT_WIDE";
+  const W=13.33, H=7.5;
+  const NAVY="001240", YELLOW="FFD200", SOFT="3C4A6B", FAINT="8A93AB", LINE="E1E5EE";
+  const hx = h => h.replace("#","");
+  const pc = h => contrast(h).replace("#","");
+  const R=pptx.ShapeType;
+  const today=new Date(), todayISO=today.toISOString().slice(0,10);
+  const dateStr=today.toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"});
+
+  function footer(s){ s.addText("Universiteit Utrecht · Projectplanning · "+dateStr,{x:0.6,y:H-0.42,w:9,h:0.3,fontFace:"Open Sans",fontSize:9,color:FAINT}); }
+  function header(s,title,sub){
+    s.background={color:"FFFFFF"};
+    s.addShape(R.rect,{x:0,y:0,w:W,h:0.16,fill:{color:YELLOW}});
+    s.addText(title,{x:0.6,y:0.4,w:W-1.2,h:0.7,fontFace:"Merriweather",fontSize:26,bold:true,color:NAVY});
+    if(sub) s.addText(sub,{x:0.62,y:1.06,w:W-1.2,h:0.4,fontFace:"Open Sans",fontSize:13,color:SOFT});
+    footer(s);
+  }
+
+  const cards=state.cards, total=cards.length;
+  const doneLaneId=state.lanes.length?state.lanes[state.lanes.length-1].id:null;
+  const done=cards.filter(c=>c.lane===doneLaneId).length;
+  const pct=total?Math.round(done/total*100):0;
+
+  /* Slide 1 — titel (UU geel blok) */
+  const s1=pptx.addSlide();
+  s1.background={color:YELLOW};
+  s1.addText("UNIVERSITEIT UTRECHT",{x:0.6,y:0.55,w:8,h:0.4,fontFace:"Open Sans",fontSize:13,bold:true,color:NAVY,charSpacing:2});
+  s1.addText("Projectplanning",{x:0.6,y:2.5,w:12.2,h:1.3,fontFace:"Merriweather",fontSize:54,bold:true,color:NAVY});
+  s1.addText("Managementsamenvatting",{x:0.63,y:3.85,w:12,h:0.6,fontFace:"Open Sans",fontSize:24,color:NAVY});
+  s1.addText(dateStr,{x:0.63,y:4.5,w:12,h:0.5,fontFace:"Open Sans",fontSize:15,color:SOFT});
+  s1.addShape(R.rect,{x:0,y:H-0.5,w:W,h:0.5,fill:{color:NAVY}});
+
+  /* Slide 2 — voortgang */
+  const s2=pptx.addSlide();
+  header(s2,"Voortgang in één oogopslag");
+  s2.addText([
+    {text:done+" van "+total+" taken afgerond",options:{fontSize:22,bold:true,color:NAVY,fontFace:"Open Sans"}},
+    {text:"   ("+pct+"%)",options:{fontSize:22,bold:true,color:"24A793",fontFace:"Open Sans"}}
+  ],{x:0.6,y:1.5,w:W-1.2,h:0.6});
+  const barX=0.6, barW=W-1.2, barY=2.5, barH=0.8;
+  s2.addShape(R.rect,{x:barX,y:barY,w:barW,h:barH,fill:{color:"F0F2F7"},line:{color:LINE,width:1}});
+  if(total>0){
+    let x=barX;
+    state.lanes.forEach((lane,i)=>{
+      const cnt=cards.filter(c=>c.lane===lane.id).length; if(cnt===0) return;
+      const w=barW*cnt/total, col=hx(LANE_PIPS[i%LANE_PIPS.length]);
+      s2.addShape(R.rect,{x,y:barY,w,h:barH,fill:{color:col}});
+      if(w>0.5) s2.addText(String(cnt),{x,y:barY,w,h:barH,align:"center",valign:"middle",fontSize:15,bold:true,color:pc("#"+col),fontFace:"Open Sans"});
+      x+=w;
+    });
+  }
+  const n=Math.max(state.lanes.length,1), tileGap=0.2;
+  const tileW=Math.min(2.3,(barW-(n-1)*tileGap)/n), tileY=3.95;
+  let lx=0.6;
+  state.lanes.forEach((lane,i)=>{
+    const cnt=cards.filter(c=>c.lane===lane.id).length, col=hx(LANE_PIPS[i%LANE_PIPS.length]);
+    s2.addShape(R.roundRect,{x:lx,y:tileY,w:tileW,h:1.5,rectRadius:0.08,fill:{color:"FFFFFF"},line:{color:LINE,width:1}});
+    s2.addShape(R.rect,{x:lx,y:tileY,w:tileW,h:0.12,fill:{color:col}});
+    s2.addText(String(cnt),{x:lx,y:tileY+0.22,w:tileW,h:0.7,align:"center",fontSize:34,bold:true,color:NAVY,fontFace:"Merriweather"});
+    s2.addText(lane.name,{x:lx,y:tileY+0.98,w:tileW,h:0.4,align:"center",fontSize:12,color:SOFT,fontFace:"Open Sans"});
+    lx+=tileW+tileGap;
+  });
+
+  /* Slide 3 — tijdlijn op hoofdlijnen (per werkstroom/categorie) */
+  const s3=pptx.addSlide();
+  header(s3,"Tijdlijn op hoofdlijnen","Per werkstroom — van start tot oplevering");
+  const dated=cards.filter(c=>c.start||c.end).map(c=>({...c,s:c.start||c.end,e:c.end||c.start}));
+  if(dated.length===0){
+    s3.addText("Nog geen taken met datums om op de tijdlijn te tonen.",{x:0.6,y:3,w:10,h:0.5,fontSize:15,color:SOFT,fontFace:"Open Sans"});
+  } else {
+    const gm={}; dated.forEach(c=>{const k=(c.tag||"Overig").trim()||"Overig";(gm[k]=gm[k]||[]).push(c);});
+    let groups=Object.keys(gm).map(k=>{
+      const items=gm[k]; let mn=items[0].s,mx=items[0].e;
+      items.forEach(c=>{if(c.s<mn)mn=c.s;if(c.e>mx)mx=c.e;});
+      return {name:k,items,mn,mx,col:hx(colorVal(items[0].color))};
+    }).sort((a,b)=>a.mn.localeCompare(b.mn));
+    const MAXG=7;
+    if(groups.length>MAXG){
+      const keep=groups.slice(0,MAXG-1), rest=groups.slice(MAXG-1);
+      let mn=rest[0].mn,mx=rest[0].mx; rest.forEach(g=>{if(g.mn<mn)mn=g.mn;if(g.mx>mx)mx=g.mx;});
+      const extra=rest.reduce((a,g)=>a+g.items.length,0);
+      keep.push({name:"Overig ("+extra+")",items:rest.flatMap(g=>g.items),mn,mx,col:NAVY});
+      groups=keep;
+    }
+    let min=groups[0].mn,max=groups[0].mx;
+    groups.forEach(g=>{if(g.mn<min)min=g.mn;if(g.mx>max)max=g.mx;});
+    let minD=new Date(min),maxD=new Date(max);
+    minD=new Date(minD.getFullYear(),minD.getMonth(),1);
+    maxD=new Date(maxD.getFullYear(),maxD.getMonth()+1,0);
+    const span=(maxD-minD)||1;
+    const plotX=3.1, plotW=W-0.6-plotX, axisY=1.75, rowsY=2.15, rowsBottom=H-0.75;
+    const dx=d=>plotX+plotW*((new Date(d)-minD)/span);
+    const mN=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+    let cur=new Date(minD);
+    while(cur<=maxD){
+      const x=dx(new Date(cur.getFullYear(),cur.getMonth(),1));
+      s3.addShape(R.rect,{x:x,y:axisY,w:0.012,h:rowsBottom-axisY,fill:{color:LINE}});
+      s3.addText(mN[cur.getMonth()]+" '"+String(cur.getFullYear()).slice(2),{x:x,y:axisY-0.35,w:1.3,h:0.3,fontSize:10,bold:true,color:SOFT,fontFace:"Open Sans"});
+      cur.setMonth(cur.getMonth()+1);
+    }
+    if(new Date(todayISO)>=minD && new Date(todayISO)<=maxD){
+      const tx=dx(todayISO);
+      s3.addShape(R.rect,{x:tx,y:axisY,w:0.03,h:rowsBottom-axisY,fill:{color:"AA1555"}});
+      s3.addText("vandaag",{x:tx-0.45,y:rowsBottom+0.02,w:0.9,h:0.25,fontSize:8,bold:true,color:"AA1555",align:"center",fontFace:"Open Sans"});
+    }
+    const rowH=Math.min(0.72,(rowsBottom-rowsY)/groups.length);
+    groups.forEach((g,i)=>{
+      const cy=rowsY+i*rowH+rowH/2;
+      s3.addText(g.name,{x:0.6,y:cy-0.2,w:2.4,h:0.4,fontSize:12,bold:true,color:NAVY,fontFace:"Open Sans",valign:"middle"});
+      const x1=dx(g.mn), bw=Math.max(dx(g.mx)-x1,0.12), bh=Math.min(0.26,rowH*0.5);
+      s3.addShape(R.roundRect,{x:x1,y:cy-bh/2,w:bw,h:bh,rectRadius:0.05,fill:{color:g.col}});
+      g.items.filter(c=>c.s===c.e).forEach(c=>{
+        const mxp=dx(c.s), d=0.16;
+        s3.addShape(R.diamond,{x:mxp-d/2,y:cy-d/2,w:d,h:d,fill:{color:hx(colorVal(c.color))},line:{color:"FFFFFF",width:1}});
+      });
+    });
+  }
+
+  /* Slide 4 — mijlpalen & komende deadlines */
+  const s4=pptx.addSlide();
+  header(s4,"Mijlpalen & komende deadlines");
+  const withDate=cards.filter(c=>c.end||c.start).map(c=>({...c,d:c.end||c.start}));
+  const open=withDate.filter(c=>c.lane!==doneLaneId);
+  const overdue=open.filter(c=>c.d<todayISO).sort((a,b)=>a.d.localeCompare(b.d)).map(c=>({...c,late:true}));
+  const upcoming=open.filter(c=>c.d>=todayISO).sort((a,b)=>a.d.localeCompare(b.d)).map(c=>({...c,late:false}));
+  let list=overdue.concat(upcoming);
+  const CAP=7, extra=list.length-CAP; if(list.length>CAP) list=list.slice(0,CAP);
+  if(list.length===0){
+    s4.addText("Geen openstaande deadlines — alle gedateerde taken zijn afgerond.",{x:0.6,y:3,w:11,h:0.5,fontSize:15,color:SOFT,fontFace:"Open Sans"});
+  } else {
+    let y=1.55; const rh=0.66;
+    list.forEach(c=>{
+      const col=hx(colorVal(c.color));
+      s4.addShape(R.rect,{x:0.6,y:y,w:0.1,h:rh-0.12,fill:{color:col}});
+      s4.addText(fmtDate(c.d),{x:0.85,y:y,w:1.1,h:rh-0.12,fontSize:14,bold:true,color:NAVY,fontFace:"Open Sans",valign:"middle"});
+      s4.addText(c.title||"(zonder titel)",{x:2.05,y:y,w:7.5,h:rh-0.12,fontSize:14,color:NAVY,fontFace:"Open Sans",valign:"middle"});
+      if(c.owner) s4.addText(c.owner,{x:9.65,y:y,w:1.9,h:rh-0.12,fontSize:12,color:SOFT,fontFace:"Open Sans",valign:"middle"});
+      const tag = c.late ? {t:"TE LAAT",c:"FFFFFF",bg:"AA1555"} : {t:(c.pri||"").toUpperCase(),c:NAVY,bg:"FFE6AB"};
+      s4.addShape(R.roundRect,{x:11.65,y:y+0.08,w:1.05,h:rh-0.28,rectRadius:0.05,fill:{color:tag.bg}});
+      s4.addText(tag.t,{x:11.65,y:y+0.08,w:1.05,h:rh-0.28,align:"center",valign:"middle",fontSize:9,bold:true,color:tag.c,fontFace:"Open Sans"});
+      y+=rh;
+    });
+    if(extra>0) s4.addText("+ "+extra+" overige taken",{x:0.85,y:y+0.05,w:6,h:0.4,fontSize:11,italic:true,color:FAINT,fontFace:"Open Sans"});
+  }
+
+  const el=document.getElementById("autosave"); el.textContent="PowerPoint maken…";
+  pptx.writeFile({fileName:"Projectplanning-management-"+todayISO+".pptx"})
+    .then(()=>flashSaved())
+    .catch(()=>{el.textContent="Kon PowerPoint niet maken";});
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="projectplanning-"+new Date().toISOString().slice(0,10)+".json";
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importData(e){
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+      const d=JSON.parse(r.result);
+      if(d.lanes&&d.cards){ state=d; save(); render(); } else alert("Onbekend bestandsformaat.");
+    }catch(err){ alert("Kon het bestand niet lezen."); } };
+  r.readAsText(file); e.target.value="";
+}
+function resetData(){
+  if(!confirm("Alles wissen en opnieuw beginnen met voorbeeldgegevens?")) return;
+  state=seed(); save(); render();
+}
+
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){closeCard();closeMenu();} });
+$("search").addEventListener("input",()=>render());
+render();
+</script>
+</body>
+</html>
