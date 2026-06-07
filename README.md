@@ -1,6 +1,6 @@
-# Projectplanning — Kanban & Tijdlijn (UU-huisstijl)
+# Projectplanning — Kanban & Tijdlijn
 
-Een lichtgewicht planningstool in de huisstijl van de Universiteit Utrecht. Je beheert
+Een lichtgewicht planningstool. Je beheert
 taken als gekleurde kaarten op een **Kanban-bord**, sleept ze tussen statussen, en bekijkt
 ze als een **tijdlijn (Gantt)**. Voor het management maak je met één klik een nette
 **PowerPoint-samenvatting** op hoofdlijnen.
