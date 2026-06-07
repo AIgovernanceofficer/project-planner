@@ -10,20 +10,6 @@ server nodig: alles draait lokaal in je browser.
 
 ---
 
-## Aan de slag
-
-**Lokaal openen.** Dubbelklik op `index.html`. De app opent in je standaardbrowser.
-
-**Op GitHub Pages publiceren.**
-1. Maak een repository aan en zet `index.html` in de hoofdmap.
-2. Ga naar **Settings → Pages**.
-3. Kies bij *Source* de branch `main` en map `/ (root)`, en sla op.
-4. Na een minuut staat de app live op `https://<gebruikersnaam>.github.io/<repo>/`.
-
-> Tip: bewaar `README.md` ook in de repo, zodat collega's weten hoe het werkt.
-
----
-
 ## De app gebruiken
 
 - **Kaart toevoegen** — knop **Kaart** rechtsboven, of **+ Kaart toevoegen** onder een lane.
@@ -59,7 +45,7 @@ exporteren, het bestand delen, en de ander zet het terug.
 Via **Menu → 📊 Managementexport (PowerPoint)** maak je een deck van vier slides, bewust
 op hoofdlijnen gehouden zodat het presenteerbaar blijft:
 
-1. **Titelslide** in UU-huisstijl.
+1. **Titelslide** .
 2. **Voortgang in één oogopslag** — afgeronde taken, percentage en verdeling over de statussen.
 3. **Tijdlijn op hoofdlijnen** — één balk per werkstroom (gegroepeerd op categorie/tag),
    met mijlpalen en een "vandaag"-lijn.
@@ -81,7 +67,7 @@ apparaat dat je gebruikt. De app stuurt jouw planninggegevens **niet** naar een 
 
 **Welke externe verbindingen zijn er wél?**
 De app haalt twee dingen van het internet op, en alleen op het moment dat je ze gebruikt:
-- de **lettertypen** (via Google Fonts) voor de juiste UU-opmaak;
+- de **lettertypen** (via Google Fonts);
 - de **PowerPoint-module** (via cdnjs) wanneer je een managementexport maakt.
 
 Daarbij worden technische verzoeken naar die externe diensten gedaan (zoals bij vrijwel elke
@@ -109,26 +95,12 @@ PowerPoint-module lokaal meeleveren in plaats van via internet (zie *Aanpassen*)
   niet: die staat alleen in jouw browser, niet in de repository. Zet geen back-upbestanden
   met persoonsgegevens in een openbare repo.
 
-> Dit is algemene informatie over hoe de tool werkt, geen juridisch advies. Toets het
-> gebruik bij twijfel aan je eigen organisatierichtlijnen en, waar van toepassing, aan je
-> privacy- of functionaris gegevensbescherming.
-
----
-
-## Het UU-logo toevoegen
-
-Het officiële UU-logo mag niet nagemaakt of aangepast worden en zit daarom niet ingebakken.
-Wil je het toevoegen:
-1. Zet het officiële logobestand (de Nederlandse variant) als `logo.png` naast `index.html`.
-2. Vervang in `index.html` het blok `<div class="logo-slot">…</div>` door:
-   `<img src="logo.png" alt="Universiteit Utrecht" style="height:42px">`
-
 ---
 
 ## Aanpassen
 
 - **Kleuren en lettertypen** staan bovenin `index.html` als CSS-variabelen (`:root`) en in
-  het `COLORS`-blok in het script — passend bij het UU-palet.
+  het `COLORS`-blok in het script.
 - **Standaard-lanes en voorbeeldkaarten** vind je in de functie `seed()`.
 - **Volledig offline** maken: download de lettertypen en het bestand
   `pptxgen.bundle.js` en verwijs er lokaal naar in plaats van naar de internetlinks.
